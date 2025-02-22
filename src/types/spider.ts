@@ -1,6 +1,13 @@
 export type Rarity = 'Common' | 'Excellent' | 'Rare' | 'Epic' | 'Legendary' | 'Mythical';
 export type Genetics = 'S' | 'A' | 'J';
 
+export interface Dress {
+  id: string;
+  name: string;
+  rarity: Rarity;
+  powerBonus: number;
+}
+
 export interface Spider {
   id: string;
   name: string;
@@ -16,17 +23,20 @@ export interface Spider {
     luck: number;
   };
   condition: {
-    health: number;
-    hunger: number;
-    hydration: number;
+    health: number; // Default: 100
+    hunger: number; // Default: 100
+    hydration: number; // Default: 100
   };
-  generation: number;
+  generation: number; // Default: 1 for initial spiders
   parents?: {
     father: string;
     mother: string;
   };
-  lastFed: string;
-  lastHydrated: string;
-  lastGemCollection: string;
+  lastFed: Date;
+  lastHydrated: Date;
+  lastGemCollection: Date;
   isHibernating: boolean;
+  isAlive: boolean; // Default: true
+  dresses: Dress[]; // Equipped dresses
+  createdAt: Date; // Timestamp when the spider was created
 }
