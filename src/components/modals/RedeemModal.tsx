@@ -8,7 +8,7 @@ interface RedeemModalProps {
 }
 
 export function RedeemModal({ isOpen, onClose }: RedeemModalProps) {
-  const { balance } = useGameStore();
+  const { player } = useGameStore();
   const [redeemAmount, setRedeemAmount] = useState('');
 
   const handleRedeem = () => {
@@ -28,7 +28,7 @@ export function RedeemModal({ isOpen, onClose }: RedeemModalProps) {
           <div className="space-y-4">
             <div className="bg-blue-50 p-4 rounded-xl">
               <p className="font-medium">Available Balance</p>
-              <p className="text-2xl font-bold">{balance.spider} $SPIDER</p>
+              <p className="text-2xl font-bold">{player.balance.SPIDER} $SPIDER</p>
             </div>
 
             <div>
@@ -41,7 +41,7 @@ export function RedeemModal({ isOpen, onClose }: RedeemModalProps) {
                 onChange={(e) => setRedeemAmount(e.target.value)}
                 className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 outline-none"
                 placeholder="Enter amount"
-                max={balance.spider}
+                max={player.balance.SPIDER}
               />
             </div>
           </div>
@@ -55,7 +55,7 @@ export function RedeemModal({ isOpen, onClose }: RedeemModalProps) {
             </button>
             <button
               onClick={handleRedeem}
-              disabled={!redeemAmount || Number(redeemAmount) > balance.spider}
+              disabled={!redeemAmount || Number(redeemAmount) > player.balance.SPIDER}
               className="flex-1 bg-blue-500 text-white py-3 rounded-xl hover:bg-blue-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Redeem
