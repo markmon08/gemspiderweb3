@@ -8,7 +8,8 @@ interface RankingModalProps {
 }
 
 export function RankingModal({ isOpen, onClose }: RankingModalProps) {
-  const { spiders } = useGameStore();
+  const { player } = useGameStore();
+  const totalPower = player.spiders.reduce((sum, s) => sum + s.power, 0);
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -21,7 +22,7 @@ export function RankingModal({ isOpen, onClose }: RankingModalProps) {
           <div className="space-y-4">
             <div className="bg-yellow-100 p-4 rounded-xl">
               <p className="font-bold">Your Rank: #1</p>
-              <p className="text-sm text-gray-600">Total Power: {spiders.reduce((sum, s) => sum + s.power, 0)}</p>
+              <p className="text-sm text-gray-600">Total Power: {totalPower}</p>
             </div>
 
             <div className="space-y-2">
