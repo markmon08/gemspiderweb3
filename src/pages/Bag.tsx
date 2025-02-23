@@ -2,7 +2,7 @@ import React from 'react';
 import { useGameStore } from '../store/useGameStore';
 
 function Bag() {
-  const { balance } = useGameStore();
+  const balance = useGameStore((state) => state.player.balance);
 
   const inventory = [
     { id: 1, name: 'Feeders', amount: balance.feeders, type: 'consumable' },

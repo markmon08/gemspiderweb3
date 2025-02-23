@@ -2,7 +2,7 @@ import React from 'react';
 import { useGameStore } from '../store/useGameStore';
 
 function Market() {
-  const { balance } = useGameStore();
+  const balance = useGameStore((state) => state.player.balance);
 
   const marketItems = [
     { id: 1, name: 'Spider Egg', price: 500, description: 'Hatch a new spider!' },
@@ -17,7 +17,7 @@ function Market() {
         <h1 className="text-2xl font-bold">Market</h1>
         <div className="text-right">
           <p className="text-sm text-gray-500">Your Balance</p>
-          <p className="font-bold">{balance.spider} $SPIDER</p>
+          <p className="font-bold">{balance.SPIDER} $SPIDER</p>
         </div>
       </div>
 
