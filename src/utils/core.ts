@@ -7,7 +7,7 @@ const TOKEN_GENERATION_RATE = 0.1; // Tokens generated per power point per hour
 
 // Helper: Get feeders needed based on level
 export const getFeedersNeeded = (level: number): number => {
-  if (level <= 10) return 7;
+  if (level <= 10) return FEEDERS_PER_FEED;
   if (level <= 20) return 10;
   if (level <= 25) return 12;
   if (level <= 30) return 15;
@@ -26,7 +26,10 @@ export const feedSpider = (spider: Spider, feeders: number): Spider => {
 
   return {
     ...spider,
-    hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
+    condition: {
+      ...spider.condition,
+      hunger: Math.min(100, spider.condition.hunger + 20), // Increase hunger by 20%
+    },
     lastFed: new Date(),
   };
 };
@@ -40,7 +43,10 @@ export const hydrateSpider = (spider: Spider, feeders: number): Spider => {
 
   return {
     ...spider,
-    hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
+    condition: {
+      ...spider.condition,
+      hydration: Math.min(100, spider.condition.hydration + 20), // Increase hydration by 20%
+    },
     lastHydrated: new Date(),
   };
 };
