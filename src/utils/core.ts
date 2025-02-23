@@ -1,4 +1,4 @@
-import { Spider, Player } from '../types/spider';
+import { Spider, Player } from './types';
 
 // Constants
 const FEEDERS_PER_FEED = 7; // Base value, increases with level
@@ -7,7 +7,7 @@ const TOKEN_GENERATION_RATE = 0.1; // Tokens generated per power point per hour
 
 // Helper: Get feeders needed based on level
 export const getFeedersNeeded = (level: number): number => {
-  if (level <= 10) return FEEDERS_PER_FEED;
+  if (level <= 10) return 7;
   if (level <= 20) return 10;
   if (level <= 25) return 12;
   if (level <= 30) return 15;
@@ -18,35 +18,30 @@ export const getFeedersNeeded = (level: number): number => {
 };
 
 // Core System: Feed a spider
-export const feedSpider = (spider: Spider, feeders: number): { updatedSpider: Spider; remainingFeeders: number } => {
+export const feedSpider = (spider: Spider, feeders: number): Spider => {
   const feedersNeeded = getFeedersNeeded(spider.level);
   if (feeders < feedersNeeded) {
     throw new Error('Not enough feeders');
   }
 
   return {
-    updatedSpider: {
-      ...spider,
-      hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
-      lastFed: new Date(),
-    },
-    remainingFeeders: feeders - feedersNeeded,
+    ...spider,
+    hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
+    lastFed: new Date(),
   };
 };
 
 // Core System: Hydrate a spider
-export const hydrateSpider = (spider: Spider, water: number): { updatedSpider: Spider; remainingWater: number } => {
-  if (water < HYDRATION_PER_DRINK) {
-    throw new Error('Not enough water');
+export const hydrateSpider = (spider: Spider, feeders: number): Spider => {
+  const feedersNeeded = getFeedersNeeded(spider.level);
+  if (feeders < feedersNeeded) {
+    throw new Error('Not enough feeders');
   }
 
   return {
-    updatedSpider: {
-      ...spider,
-      hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
-      lastHydrated: new Date(),
-    },
-    remainingWater: water - HYDRATION_PER_DRINK,
+    ...spider,
+    hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
+    lastHydrated: new Date(),
   };
 };
 
@@ -61,25 +56,24 @@ export const calculateTokensGenerated = (spider: Spider): number => {
   const timeElapsed = (now.getTime() - lastGenerationTime.getTime()) / (1000 * 60 * 60); // Time in hours
 
   const tokensGenerated = spider.power * TOKEN_GENERATION_RATE * timeElapsed;
-  return Math.floor(tokensGenerated * 100) / 100; // Round to 2 decimal places
+  return tokensGenerated;
 };
 
 // Core System: Update player tokens based on all spiders
 export const updatePlayerTokens = (player: Player): Player => {
   let totalTokensGenerated = 0;
 
-  const updatedSpiders = player.spiders.map((spider) => {
+  player.spiders.forEach((spider) => {
     const tokensGenerated = calculateTokensGenerated(spider);
     totalTokensGenerated += tokensGenerated;
-    return { ...spider, lastTokenGeneration: new Date() };
+    spider.lastTokenGeneration = new Date(); // Update the last generation time
   });
 
   return {
     ...player,
-    spiders: updatedSpiders,
     balance: {
       ...player.balance,
-      SPIDER: Math.floor((player.balance.SPIDER + totalTokensGenerated) * 100) / 100,
+      SPIDER: player.balance.SPIDER + totalTokensGenerated,
     },
   };
 };
