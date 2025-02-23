@@ -7,7 +7,7 @@ const TOKEN_GENERATION_RATE = 0.1; // Tokens generated per power point per hour
 
 // Helper: Get feeders needed based on level
 export const getFeedersNeeded = (level: number): number => {
-  if (level <= 10) return 7;
+  if (level <= 10) return FEEDERS_PER_FEED;
   if (level <= 20) return 10;
   if (level <= 25) return 12;
   if (level <= 30) return 15;
@@ -18,25 +18,35 @@ export const getFeedersNeeded = (level: number): number => {
 };
 
 // Core System: Feed a spider
-export const feedSpider = (spider: Spider, feeders: number): Spider => {
+export const feedSpider = (spider: Spider, feeders: number): { updatedSpider: Spider; remainingFeeders: number } => {
   const feedersNeeded = getFeedersNeeded(spider.level);
   if (feeders < feedersNeeded) {
     throw new Error('Not enough feeders');
   }
 
   return {
-    ...spider,
-    hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
-    lastFed: new Date(),
+    updatedSpider: {
+      ...spider,
+      hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
+      lastFed: new Date(),
+    },
+    remainingFeeders: feeders - feedersNeeded,
   };
 };
 
 // Core System: Hydrate a spider
-export const hydrateSpider = (spider: Spider): Spider => {
+export const hydrateSpider = (spider: Spider, water: number): { updatedSpider: Spider; remainingWater: number } => {
+  if (water < HYDRATION_PER_DRINK) {
+    throw new Error('Not enough water');
+  }
+
   return {
-    ...spider,
-    hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
-    lastHydrated: new Date(),
+    updatedSpider: {
+      ...spider,
+      hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
+      lastHydrated: new Date(),
+    },
+    remainingWater: water - HYDRATION_PER_DRINK,
   };
 };
 
@@ -58,14 +68,15 @@ export const calculateTokensGenerated = (spider: Spider): number => {
 export const updatePlayerTokens = (player: Player): Player => {
   let totalTokensGenerated = 0;
 
-  player.spiders.forEach((spider) => {
+  const updatedSpiders = player.spiders.map((spider) => {
     const tokensGenerated = calculateTokensGenerated(spider);
     totalTokensGenerated += tokensGenerated;
-    spider.lastTokenGeneration = new Date(); // Update the last generation time
+    return { ...spider, lastTokenGeneration: new Date() };
   });
 
   return {
     ...player,
+    spiders: updatedSpiders,
     balance: {
       ...player.balance,
       SPIDER: Math.floor((player.balance.SPIDER + totalTokensGenerated) * 100) / 100,
