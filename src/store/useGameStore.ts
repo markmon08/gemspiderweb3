@@ -27,7 +27,7 @@ const initialSpider: Spider = {
     agility: 10,
     luck: 10,
   },
-  condition: { // Nest hunger, hydration, and health under `condition`
+  condition: {
     health: 100,
     hunger: 80,
     hydration: 90,
@@ -45,15 +45,15 @@ const initialSpider: Spider = {
 
 const initialPlayer: Player = {
   id: '1',
-  name: 'Player One', // Add missing property
+  name: 'Player One',
   spiders: [initialSpider],
   balance: {
     SPIDER: 1000,
     feeders: 50,
-    gems: 10, // Add missing property
+    gems: 10,
   },
   createdAt: new Date(),
-  lastLogin: new Date(), // Add missing property
+  lastLogin: new Date(),
 };
 
 export const useGameStore = create<GameState>((set) => ({
@@ -94,7 +94,10 @@ export const useGameStore = create<GameState>((set) => ({
   }),
 
   updateTokens: () => set((state) => ({
-    player: updatePlayerTokens(state.player),
+    player: {
+      ...state.player,
+      ...updatePlayerTokens(state.player),
+    },
   })),
 
   addSpider: (spider) => set((state) => ({
