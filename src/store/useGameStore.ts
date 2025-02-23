@@ -60,14 +60,17 @@ export const useGameStore = create<GameState>((set) => ({
   player: initialPlayer,
 
   feedSpiderAction: (spiderId: string) => set((state) => {
-    const spider = state.player.spiders.find(s => s.id === spiderId);
-    if (!spider || state.player.balance.feeders < 1) return state;
+    const spiderIndex = state.player.spiders.findIndex(s => s.id === spiderId);
+    if (spiderIndex === -1 || state.player.balance.feeders < 1) return state;
 
-    const updatedSpider = feedSpider(spider);
+    const updatedSpider = feedSpider(state.player.spiders[spiderIndex]);
+    const updatedSpiders = [...state.player.spiders];
+    updatedSpiders[spiderIndex] = updatedSpider;
+
     return {
       player: {
         ...state.player,
-        spiders: state.player.spiders.map(s => s.id === spiderId ? { ...s, ...updatedSpider } : s),
+        spiders: updatedSpiders,
         balance: {
           ...state.player.balance,
           feeders: state.player.balance.feeders - 1,
@@ -77,14 +80,17 @@ export const useGameStore = create<GameState>((set) => ({
   }),
 
   hydrateSpiderAction: (spiderId: string) => set((state) => {
-    const spider = state.player.spiders.find(s => s.id === spiderId);
-    if (!spider || state.player.balance.feeders < 1) return state;
+    const spiderIndex = state.player.spiders.findIndex(s => s.id === spiderId);
+    if (spiderIndex === -1 || state.player.balance.feeders < 1) return state;
 
-    const updatedSpider = hydrateSpider(spider);
+    const updatedSpider = hydrateSpider(state.player.spiders[spiderIndex]);
+    const updatedSpiders = [...state.player.spiders];
+    updatedSpiders[spiderIndex] = updatedSpider;
+
     return {
       player: {
         ...state.player,
-        spiders: state.player.spiders.map(s => s.id === spiderId ? { ...s, ...updatedSpider } : s),
+        spiders: updatedSpiders,
         balance: {
           ...state.player.balance,
           feeders: state.player.balance.feeders - 1,
