@@ -27,9 +27,11 @@ const initialSpider: Spider = {
     agility: 10,
     luck: 10,
   },
-  hunger: 80,
-  hydration: 90,
-  health: 100,
+  condition: { // Nest hunger, hydration, and health under `condition`
+    health: 100,
+    hunger: 80,
+    hydration: 90,
+  },
   generation: 1,
   lastFed: new Date(),
   lastHydrated: new Date(),
@@ -43,18 +45,20 @@ const initialSpider: Spider = {
 
 const initialPlayer: Player = {
   id: '1',
+  name: 'Player One', // Add missing property
   spiders: [initialSpider],
   balance: {
     SPIDER: 1000,
     feeders: 50,
+    gems: 10, // Add missing property
   },
   createdAt: new Date(),
-  lastLogin: new Date(),
+  lastLogin: new Date(), // Add missing property
 };
 
 export const useGameStore = create<GameState>((set) => ({
   player: initialPlayer,
-  
+
   feedSpiderAction: (spiderId: string) => set((state) => {
     const spider = state.player.spiders.find(s => s.id === spiderId);
     if (!spider || state.player.balance.feeders < 1) return state;
@@ -74,13 +78,17 @@ export const useGameStore = create<GameState>((set) => ({
 
   hydrateSpiderAction: (spiderId: string) => set((state) => {
     const spider = state.player.spiders.find(s => s.id === spiderId);
-    if (!spider) return state;
+    if (!spider || state.player.balance.feeders < 1) return state;
 
-    const updatedSpider = hydrateSpider(spider);
+    const updatedSpider = hydrateSpider(spider, state.player.balance.feeders);
     return {
       player: {
         ...state.player,
         spiders: state.player.spiders.map(s => s.id === spiderId ? updatedSpider : s),
+        balance: {
+          ...state.player.balance,
+          feeders: state.player.balance.feeders - 1,
+        },
       },
     };
   }),
