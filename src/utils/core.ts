@@ -1,13 +1,11 @@
-import { Spider, Player } from './types';
+import { Spider, Player } from '../types/spider';
 
 // Constants
-const FEEDERS_PER_FEED = 7; // Base value, increases with level
-const HYDRATION_PER_DRINK = 7; // Base value, increases with level
 const TOKEN_GENERATION_RATE = 0.1; // Tokens generated per power point per hour
 
 // Helper: Get feeders needed based on level
 export const getFeedersNeeded = (level: number): number => {
-  if (level <= 10) return FEEDERS_PER_FEED;
+  if (level <= 10) return 7;
   if (level <= 20) return 10;
   if (level <= 25) return 12;
   if (level <= 30) return 15;
