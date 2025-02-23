@@ -1,12 +1,9 @@
-import { Spider, Player, Rarity } from '../types/spider';
+import { Spider, Player } from '../types/spider';
 
-// Core constants
+// Constants
 const FEEDERS_PER_FEED = 7; // Base value, increases with level
 const HYDRATION_PER_DRINK = 7; // Base value, increases with level
 const TOKEN_GENERATION_RATE = 0.1; // Tokens generated per power point per hour
-const MAX_HEALTH = 100;
-const MAX_HUNGER = 100;
-const MAX_HYDRATION = 100;
 
 // Helper: Get feeders needed based on level
 export const getFeedersNeeded = (level: number): number => {
@@ -20,18 +17,6 @@ export const getFeedersNeeded = (level: number): number => {
   return 40; // Level 81-100
 };
 
-// Helper: Calculate power increase on level up
-export const getPowerIncrease = (rarity: Rarity): number => {
-  switch (rarity) {
-    case 'Common': return Math.floor(Math.random() * 16) + 18; // 18-33
-    case 'Excellent': return Math.floor(Math.random() * 12) + 34; // 34-45
-    case 'Rare': return Math.floor(Math.random() * 15) + 46; // 46-60
-    case 'Epic': return Math.floor(Math.random() * 30) + 61; // 61-90
-    case 'Legendary': return Math.floor(Math.random() * 40) + 91; // 91-130
-    case 'Mythical': return Math.floor(Math.random() * 50) + 131; // 131-180
-  }
-};
-
 // Core System: Feed a spider
 export const feedSpider = (spider: Spider, feeders: number): Spider => {
   const feedersNeeded = getFeedersNeeded(spider.level);
@@ -41,27 +26,16 @@ export const feedSpider = (spider: Spider, feeders: number): Spider => {
 
   return {
     ...spider,
-    condition: {
-      ...spider.condition,
-      hunger: Math.min(MAX_HUNGER, spider.condition.hunger + 20), // Increase hunger by 20%
-    },
+    hunger: Math.min(100, spider.hunger + 20), // Increase hunger by 20%
     lastFed: new Date(),
   };
 };
 
 // Core System: Hydrate a spider
-export const hydrateSpider = (spider: Spider, feeders: number): Spider => {
-  const feedersNeeded = getFeedersNeeded(spider.level);
-  if (feeders < feedersNeeded) {
-    throw new Error('Not enough feeders');
-  }
-
+export const hydrateSpider = (spider: Spider): Spider => {
   return {
     ...spider,
-    condition: {
-      ...spider.condition,
-      hydration: Math.min(MAX_HYDRATION, spider.condition.hydration + 20), // Increase hydration by 20%
-    },
+    hydration: Math.min(100, spider.hydration + 20), // Increase hydration by 20%
     lastHydrated: new Date(),
   };
 };
@@ -73,11 +47,11 @@ export const calculateTokensGenerated = (spider: Spider): number => {
   }
 
   const now = new Date();
-  const lastGenerationTime = spider.lastGemCollection || now;
+  const lastGenerationTime = spider.lastTokenGeneration || now;
   const timeElapsed = (now.getTime() - lastGenerationTime.getTime()) / (1000 * 60 * 60); // Time in hours
 
   const tokensGenerated = spider.power * TOKEN_GENERATION_RATE * timeElapsed;
-  return tokensGenerated;
+  return Math.floor(tokensGenerated * 100) / 100; // Round to 2 decimal places
 };
 
 // Core System: Update player tokens based on all spiders
@@ -87,57 +61,14 @@ export const updatePlayerTokens = (player: Player): Player => {
   player.spiders.forEach((spider) => {
     const tokensGenerated = calculateTokensGenerated(spider);
     totalTokensGenerated += tokensGenerated;
-    spider.lastGemCollection = new Date(); // Update the last generation time
+    spider.lastTokenGeneration = new Date(); // Update the last generation time
   });
 
   return {
     ...player,
     balance: {
       ...player.balance,
-      SPIDER: player.balance.SPIDER + totalTokensGenerated,
+      SPIDER: Math.floor((player.balance.SPIDER + totalTokensGenerated) * 100) / 100,
     },
   };
-};
-
-// Core System: Update spider condition (health, hunger, hydration)
-export const updateSpiderCondition = (spider: Spider): Spider => {
-  const now = new Date();
-  const hoursSinceLastFed = (now.getTime() - new Date(spider.lastFed).getTime()) / (1000 * 60 * 60);
-  const hoursSinceLastHydrated = (now.getTime() - new Date(spider.lastHydrated).getTime()) / (1000 * 60 * 60);
-
-  let newHunger = spider.condition.hunger - hoursSinceLastFed * 5; // Hunger decreases by 5% per hour
-  let newHydration = spider.condition.hydration - hoursSinceLastHydrated * 5; // Hydration decreases by 5% per hour
-
-  // Ensure hunger and hydration don't go below 0
-  newHunger = Math.max(0, newHunger);
-  newHydration = Math.max(0, newHydration);
-
-  // Calculate health decay
-  let newHealth = spider.condition.health;
-  if (newHunger === 0 || newHydration === 0) {
-    newHealth -= 10; // Health decreases by 10% if hunger or hydration reaches 0
-  }
-
-  // Ensure health doesn't go below 0
-  newHealth = Math.max(0, newHealth);
-
-  return {
-    ...spider,
-    condition: {
-      health: newHealth,
-      hunger: newHunger,
-      hydration: newHydration,
-    },
-  };
-};
-
-// Export all functions
-export {
-  getFeedersNeeded,
-  getPowerIncrease,
-  feedSpider,
-  hydrateSpider,
-  calculateTokensGenerated,
-  updatePlayerTokens,
-  updateSpiderCondition,
 };
