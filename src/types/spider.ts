@@ -22,12 +22,10 @@ export interface Spider {
     agility: number;
     luck: number;
   };
-  condition: {
-    health: number; // Default: 100
-    hunger: number; // Default: 100
-    hydration: number; // Default: 100
-  };
-  generation: number; // Default: 1 for initial spiders
+  hunger: number; // Changed from condition.hunger
+  hydration: number; // Changed from condition.hydration
+  health: number; // Changed from condition.health
+  generation: number;
   parents?: {
     father: string;
     mother: string;
@@ -35,8 +33,20 @@ export interface Spider {
   lastFed: Date;
   lastHydrated: Date;
   lastGemCollection: Date;
+  lastTokenGeneration: Date;
   isHibernating: boolean;
-  isAlive: boolean; // Default: true
-  dresses: Dress[]; // Equipped dresses
-  createdAt: Date; // Timestamp when the spider was created
+  isAlive: boolean;
+  dresses: Dress[];
+  createdAt: Date;
+}
+
+export interface Player {
+  id: string;
+  spiders: Spider[];
+  balance: {
+    SPIDER: number;
+    feeders: number;
+  };
+  createdAt: Date;
+  lastLogin: Date;
 }
