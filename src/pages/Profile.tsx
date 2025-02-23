@@ -4,13 +4,14 @@ import { TonConnectButton } from '@tonconnect/ui-react';
 import { Dialog } from '@headlessui/react';
 
 function Profile() {
-  const { balance, spiders } = useGameStore();
+  const balance = useGameStore((state) => state.player.balance);
+  const spiders = useGameStore((state) => state.player.spiders);
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
 
   const stats = {
     totalSpiders: spiders.length,
-    highestLevel: Math.max(...spiders.map(s => s.level)),
+    highestLevel: spiders.length > 0 ? Math.max(...spiders.map(s => s.level)) : 0,
     totalPower: spiders.reduce((sum, s) => sum + s.power, 0),
     accountCreated: '2024-01-20',
   };
@@ -35,11 +36,11 @@ function Profile() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-50 p-3 rounded">
                 <p className="text-sm text-gray-500">$SPIDER</p>
-                <p className="font-bold">{balance.spider}</p>
+                <p className="font-bold">{balance.SPIDER}</p>
               </div>
               <div className="bg-gray-50 p-3 rounded">
                 <p className="text-sm text-gray-500">Feeders</p>
-                <p className="font-bold">{balance.feeders}</p>
+                <p className="font-bold">{balance.FEEDERS}</p>
               </div>
             </div>
           </div>
@@ -105,10 +106,10 @@ function Profile() {
                   onChange={(e) => setWithdrawAmount(e.target.value)}
                   className="w-full border rounded-lg px-3 py-2"
                   placeholder="Enter amount"
-                  max={balance.spider}
+                  max={balance.SPIDER}
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  Available: {balance.spider} $SPIDER
+                  Available: {balance.SPIDER} $SPIDER
                 </p>
               </div>
 
@@ -122,7 +123,7 @@ function Profile() {
                 <button
                   onClick={handleWithdraw}
                   className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                  disabled={!withdrawAmount || Number(withdrawAmount) > balance.spider}
+                  disabled={!withdrawAmount || Number(withdrawAmount) > balance.SPIDER}
                 >
                   Withdraw
                 </button>
