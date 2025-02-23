@@ -33,14 +33,14 @@ const initialSpider: Spider = {
     hydration: 90,
   },
   generation: 1,
-  lastFed: new Date(),
-  lastHydrated: new Date(),
-  lastGemCollection: new Date(),
-  lastTokenGeneration: new Date(),
+  lastFed: new Date().toISOString(),
+  lastHydrated: new Date().toISOString(),
+  lastGemCollection: new Date().toISOString(),
+  lastTokenGeneration: new Date().toISOString(),
   isHibernating: false,
   isAlive: true,
   dresses: [],
-  createdAt: new Date(),
+  createdAt: new Date().toISOString(),
 };
 
 const initialPlayer: Player = {
@@ -52,8 +52,8 @@ const initialPlayer: Player = {
     feeders: 50,
     gems: 10,
   },
-  createdAt: new Date(),
-  lastLogin: new Date(),
+  createdAt: new Date().toISOString(),
+  lastLogin: new Date().toISOString(),
 };
 
 export const useGameStore = create<GameState>((set) => ({
@@ -63,11 +63,11 @@ export const useGameStore = create<GameState>((set) => ({
     const spider = state.player.spiders.find(s => s.id === spiderId);
     if (!spider || state.player.balance.feeders < 1) return state;
 
-    const updatedSpider = feedSpider(spider, state.player.balance.feeders);
+    const updatedSpider = feedSpider(spider);
     return {
       player: {
         ...state.player,
-        spiders: state.player.spiders.map(s => s.id === spiderId ? updatedSpider : s),
+        spiders: state.player.spiders.map(s => s.id === spiderId ? { ...s, ...updatedSpider } : s),
         balance: {
           ...state.player.balance,
           feeders: state.player.balance.feeders - 1,
@@ -80,11 +80,11 @@ export const useGameStore = create<GameState>((set) => ({
     const spider = state.player.spiders.find(s => s.id === spiderId);
     if (!spider || state.player.balance.feeders < 1) return state;
 
-    const updatedSpider = hydrateSpider(spider, state.player.balance.feeders);
+    const updatedSpider = hydrateSpider(spider);
     return {
       player: {
         ...state.player,
-        spiders: state.player.spiders.map(s => s.id === spiderId ? updatedSpider : s),
+        spiders: state.player.spiders.map(s => s.id === spiderId ? { ...s, ...updatedSpider } : s),
         balance: {
           ...state.player.balance,
           feeders: state.player.balance.feeders - 1,
