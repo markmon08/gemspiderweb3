@@ -22,9 +22,11 @@ export interface Spider {
     agility: number;
     luck: number;
   };
-  hunger: number; // Changed from condition.hunger
-  hydration: number; // Changed from condition.hydration
-  health: number; // Changed from condition.health
+  condition: { // Add a `condition` object
+    health: number;
+    hunger: number;
+    hydration: number;
+  };
   generation: number;
   parents?: {
     father: string;
@@ -46,6 +48,7 @@ export interface Player {
   balance: {
     SPIDER: number;
     feeders: number;
+    gems: number; // Add missing property
   };
   createdAt: Date;
   lastLogin: Date;
