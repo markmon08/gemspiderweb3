@@ -8,7 +8,7 @@ interface BreedingModalProps {
 }
 
 export function BreedingModal({ isOpen, onClose }: BreedingModalProps) {
-  const { spiders } = useGameStore();
+  const { player } = useGameStore();
   const [selectedSpiders, setSelectedSpiders] = useState<string[]>([]);
 
   const handleBreed = () => {
@@ -29,7 +29,7 @@ export function BreedingModal({ isOpen, onClose }: BreedingModalProps) {
             <p className="text-gray-600">Select two spiders to breed:</p>
             
             <div className="grid grid-cols-2 gap-3">
-              {spiders.map((spider) => (
+              {player.spiders.map((spider) => (
                 <button
                   key={spider.id}
                   onClick={() => {
