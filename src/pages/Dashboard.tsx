@@ -124,10 +124,10 @@ function Dashboard() {
             <div className="w-full bg-black/30 rounded-xl h-2">
               <div 
                 className="bg-white rounded-xl h-full transition-all duration-300"
-                style={{ width: `${activeSpider.health}%` }}
+                style={{ width: `${activeSpider.condition.health}%` }}
               ></div>
             </div>
-            <span>{activeSpider.health}%</span>
+            <span>{activeSpider.condition.health}%</span>
             <ChevronUpIcon className="w-4 h-4 absolute -top-2" />
           </Menu.Button>
           <Menu.Items className="absolute bottom-full mb-2 w-48 bg-white rounded-xl shadow-lg p-2 flex flex-col gap-1">
@@ -165,10 +165,10 @@ function Dashboard() {
             <div className="w-full bg-black/30 rounded-xl h-2">
               <div 
                 className="bg-white rounded-xl h-full transition-all duration-300"
-                style={{ width: `${activeSpider.hunger}%` }}
+                style={{ width: `${activeSpider.condition.hunger}%` }}
               ></div>
             </div>
-            <span>{activeSpider.hunger}%</span>
+            <span>{activeSpider.condition.hunger}%</span>
             <ChevronUpIcon className="w-4 h-4 absolute -top-2" />
           </Menu.Button>
           <Menu.Items className="absolute bottom-full mb-2 w-48 bg-white rounded-xl shadow-lg p-2 flex flex-col gap-1">
@@ -207,10 +207,10 @@ function Dashboard() {
             <div className="w-full bg-black/30 rounded-xl h-2">
               <div 
                 className="bg-white rounded-xl h-full transition-all duration-300"
-                style={{ width: `${activeSpider.hydration}%` }}
+                style={{ width: `${activeSpider.condition.hydration}%` }}
               ></div>
             </div>
-            <span>{activeSpider.hydration}%</span>
+            <span>{activeSpider.condition.hydration}%</span>
             <ChevronUpIcon className="w-4 h-4 absolute -top-2" />
           </Menu.Button>
           <Menu.Items className="absolute bottom-full mb-2 w-48 bg-white rounded-xl shadow-lg p-2 flex flex-col gap-1">
