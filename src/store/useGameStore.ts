@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Spider, Player } from '../types/spider';
-import { feedSpider, hydrateSpider, updatePlayerTokens } from '../utils/core';
+import { feedSpider, hydrateSpider, updatePlayerTokens, getFeedersNeeded } from '../utils/core';
 
 interface GameState {
   player: Player;
@@ -58,12 +58,19 @@ const initialPlayer: Player = {
 
 export const useGameStore = create<GameState>((set) => ({
   player: initialPlayer,
-
+  
   feedSpiderAction: (spiderId: string) => set((state) => {
     const spiderIndex = state.player.spiders.findIndex(s => s.id === spiderId);
-    if (spiderIndex === -1 || state.player.balance.feeders < 1) return state;
+    if (spiderIndex === -1) return state;
 
-    const updatedSpider = feedSpider(state.player.spiders[spiderIndex]);
+    const spider = state.player.spiders[spiderIndex];
+    const feedersNeeded = getFeedersNeeded(spider.level);
+    
+    if (state.player.balance.feeders < feedersNeeded) return state;
+
+    const updatedSpider = feedSpider(spider, state.player.balance.feeders);
+    if (!updatedSpider) return state;
+
     const updatedSpiders = [...state.player.spiders];
     updatedSpiders[spiderIndex] = updatedSpider;
 
@@ -73,7 +80,7 @@ export const useGameStore = create<GameState>((set) => ({
         spiders: updatedSpiders,
         balance: {
           ...state.player.balance,
-          feeders: state.player.balance.feeders - 1,
+          feeders: state.player.balance.feeders - feedersNeeded,
         },
       },
     };
@@ -81,7 +88,7 @@ export const useGameStore = create<GameState>((set) => ({
 
   hydrateSpiderAction: (spiderId: string) => set((state) => {
     const spiderIndex = state.player.spiders.findIndex(s => s.id === spiderId);
-    if (spiderIndex === -1 || state.player.balance.feeders < 1) return state;
+    if (spiderIndex === -1) return state;
 
     const updatedSpider = hydrateSpider(state.player.spiders[spiderIndex]);
     const updatedSpiders = [...state.player.spiders];
@@ -91,19 +98,12 @@ export const useGameStore = create<GameState>((set) => ({
       player: {
         ...state.player,
         spiders: updatedSpiders,
-        balance: {
-          ...state.player.balance,
-          feeders: state.player.balance.feeders - 1,
-        },
       },
     };
   }),
 
   updateTokens: () => set((state) => ({
-    player: {
-      ...state.player,
-      ...updatePlayerTokens(state.player),
-    },
+    player: updatePlayerTokens(state.player),
   })),
 
   addSpider: (spider) => set((state) => ({
