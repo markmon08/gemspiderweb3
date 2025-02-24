@@ -22,7 +22,7 @@ export interface Spider {
     agility: number;
     luck: number;
   };
-  condition: { // Add a `condition` object
+  condition: {
     health: number;
     hunger: number;
     hydration: number;
@@ -32,24 +32,25 @@ export interface Spider {
     father: string;
     mother: string;
   };
-  lastFed: Date;
-  lastHydrated: Date;
-  lastGemCollection: Date;
-  lastTokenGeneration: Date;
+  lastFed: string;
+  lastHydrated: string;
+  lastGemCollection: string;
+  lastTokenGeneration: string;
   isHibernating: boolean;
   isAlive: boolean;
   dresses: Dress[];
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface Player {
   id: string;
+  name: string;
   spiders: Spider[];
   balance: {
     SPIDER: number;
     feeders: number;
-    gems: number; // Add missing property
+    gems: number;
   };
-  createdAt: Date;
-  lastLogin: Date;
+  createdAt: string;
+  lastLogin: string;
 }
